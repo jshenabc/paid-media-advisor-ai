@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IBM Paid Media Market Advisor</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css">
+</head>
+<body>
+  <div class="bx--grid bx--grid--full-width container">
+
+    <div class="bx--row header-row">
+      <div class="bx--col">
+        <h1 class="bx--type-expressive-heading-05">IBM Paid Media Market Advisor</h1>
+      </div>
+    </div>
+
+    <div class="bx--row form-row">
+      <div class="bx--col">
+        <label for="preferences" class="bx--label">Enter your query:</label><br/>
+        <textarea id="preferences" class="bx--text-area" placeholder="e.g., How many clicks for Security?"></textarea><br/>
+        <button class="bx--btn bx--btn--primary bx--btn--sm" onclick="getRecommendations()">Get Recommendations</button>
+      </div>
+    </div>
+
+    <div class="bx--row result-row">
+      <div class="bx--col">
+        <h2 class="bx--type-productive-heading-03">Recommended Result:</h2>
+        <div id="response" class="bx--callout--info">Your AI-generated response will appear here...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    async function getRecommendations() {
+      const prefs = document.getElementById("preferences").value;
+      const respDiv = document.getElementById("response");
+      respDiv.textContent = "Loading...";
+
+      const formData = new FormData();
+      formData.append("preferences", prefs);
+
+      try {
+        const res = await fetch("/recommend", { method: "POST", body: formData });
+
+        if (!res.ok) {
+          respDiv.innerHTML = `<p class="bx--type-body-compact" style="color: red;">Error: Unable to process the request.</p>`;
+          return;
+        }
+
+        const data = await res.json();
+        respDiv.innerHTML = `<p class="bx--type-body-compact">${data.recommendations}</p>`;
+
+      } catch (error) {
+        respDiv.innerHTML = `<p class="bx--type-body-compact" style="color: red;">Error: ${error.message}</p>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
